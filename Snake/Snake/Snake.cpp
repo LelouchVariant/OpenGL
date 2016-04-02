@@ -8,19 +8,19 @@
 const int n(20), m(20); // nxm field
 const int scale(25);    // size a box
 
+int speedSnake = 150;
 int fieldWidth = scale*n;
 int fieldHeight = scale*m;
 
 int snakeNum = 4, snakeDirection;
 
-Apples *apples[9];
+Apples *apples[20];
 
 struct
 {
 	int x;
 	int y;
 } s[100];
-
 
 void tick()
 {
@@ -36,11 +36,11 @@ void tick()
 	if (snakeDirection == 2) s[0].x += 1;
 	if (snakeDirection == 3) s[0].y -= 1;
 
-	//for (int i(0); i < 30; i++) {
-	//	if ((s[0].x == appls[i].x) && (s[0].y == appls[i].y)) {
-	//		snakeNum++; appls[i].newApple();
-	//	}
-	//}
+	for (int i(0); i < 20; i++) {
+		if ((s[0].x == apples[i]->getX()) && (s[0].y == apples[i]->getY())) {
+			snakeNum++; apples[i]->newApple();
+		}
+	}
 
 
 	//if (s[0].x > n) snakeDirection = 1;
@@ -52,12 +52,11 @@ void tick()
 }
 
 void drawSnake() {
-	glColor3f(0.0, 0.0, 1.0);
+	glColor3f(0.647, 0.164, 0.164);
 	for (int i = 0; i < snakeNum; i++) {
 		glRectf(s[i].x*scale, s[i].y*scale, (s[i].x + 1)*scale, (s[i].y + 1)*scale);
 	}
 }
-
 
 void myKeyboard(int key, int a, int b) {
 	switch (key)
@@ -76,9 +75,8 @@ void myKeyboard(int key, int a, int b) {
 	}
 }
 
-void drawField()
-{
-	glColor3f(1.0, 0.549, 0.0);
+void drawField() {
+	glColor3f(0.180, 0.545, 0.341);
 	glBegin(GL_LINES);
 	for (int i(0); i < fieldWidth; i += scale)
 	{
@@ -91,12 +89,10 @@ void drawField()
 	glEnd();
 }
 
-
-void display()
-{
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+void display() {
+	glClearColor(0.180, 0.545, 0.341,0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (int i(0); i < 9; i++)
+	for (int i(0); i < 20; i++)
 		apples[i]->drawApple();
 	drawField();
 	drawSnake();
@@ -104,11 +100,10 @@ void display()
 }
 
 
-void timer(int = 0)
-{
+void timer(int = 0) {
 	display();
 	tick();
-	glutTimerFunc(100, timer, 0);
+	glutTimerFunc(speedSnake, timer, 0);
 }
 
 
@@ -118,9 +113,9 @@ int main(int argc, char **argv)
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
 
 
-	for (int i(0); i < 9; i++)
+	for (int i(0); i < 20; i++)
 		apples[i] = new Apples(n, m, scale);
-	s[0].x = 10;  s[0].y = 10;
+	s[0].x = 10;  s[0].y = 10; //snake start coordinat
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
@@ -131,7 +126,7 @@ int main(int argc, char **argv)
 	glLoadIdentity();
 	gluOrtho2D(0, fieldWidth, 0, fieldHeight);
 	glutDisplayFunc(display);     // Draw func
-	glutTimerFunc(100, timer, 0); //Timer
+	glutTimerFunc(speedSnake, timer, 0); //Timer
 	glutSpecialFunc(myKeyboard);  //Key
 	glutMainLoop();
 
@@ -139,4 +134,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
