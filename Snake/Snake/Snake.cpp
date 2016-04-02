@@ -2,46 +2,37 @@
 //
 
 #include "stdafx.h"
-#include "Apples.h"
 
+//classes
+#include "Apples.h"
+#include "Snakes.h"
 
 const int n(20), m(20); // nxm field
 const int scale(25);    // size a box
 
-int speedSnake = 150;
 int fieldWidth = scale*n;
 int fieldHeight = scale*m;
 
-int snakeNum = 4, snakeDirection;
+
+
 
 Apples *apples[20];
+Snakes *snake = new Snakes(scale);
 
-struct
-{
-	int x;
-	int y;
-} s[100];
 
 void tick()
 {
-	for (int i = snakeNum; i > 0; --i)
-	{
-		s[i].x = s[i - 1].x;
-		s[i].y = s[i - 1].y;
-	}
 
-
-	if (snakeDirection == 0) s[0].y += 1;
-	if (snakeDirection == 1) s[0].x -= 1;
-	if (snakeDirection == 2) s[0].x += 1;
-	if (snakeDirection == 3) s[0].y -= 1;
+	snake->snakeRun();
 
 	for (int i(0); i < 20; i++) {
-		if ((s[0].x == apples[i]->getX()) && (s[0].y == apples[i]->getY())) {
-			snakeNum++; apples[i]->newApple();
+		if ((snake->getSnakeHeadX() == apples[i]->getX()) && (snake->getSnakeHeadY() == apples[i]->getY())) {
+			apples[i]->newApple();
+			snake->snakeEat();
 		}
 	}
 
+	
 
 	//if (s[0].x > n) snakeDirection = 1;
 	//if (s[0].x < n) snakeDirection = 2;
@@ -51,26 +42,19 @@ void tick()
 
 }
 
-void drawSnake() {
-	glColor3f(0.647, 0.164, 0.164);
-	for (int i = 0; i < snakeNum; i++) {
-		glRectf(s[i].x*scale, s[i].y*scale, (s[i].x + 1)*scale, (s[i].y + 1)*scale);
-	}
-}
-
 void myKeyboard(int key, int a, int b) {
 	switch (key)
 	{
-	case 101: snakeDirection = 0;
+	case 101: snake->setSnakeDirection(0);
 		break;
 
-	case 102: snakeDirection = 2;
+	case 102: snake->setSnakeDirection(2);
 		break;
 
-	case 100: snakeDirection = 1;
+	case 100: snake->setSnakeDirection(1);
 		break;
 
-	case 103: snakeDirection = 3;
+	case 103: snake->setSnakeDirection(3);
 		break;
 	}
 }
@@ -95,17 +79,15 @@ void display() {
 	for (int i(0); i < 20; i++)
 		apples[i]->drawApple();
 	drawField();
-	drawSnake();
+	snake->drawSnake();
 	glFlush();
 }
-
 
 void timer(int = 0) {
 	display();
 	tick();
-	glutTimerFunc(speedSnake, timer, 0);
+	glutTimerFunc(snake->getSpeedSnake(), timer, 0);
 }
-
 
 int main(int argc, char **argv)
 {
@@ -115,7 +97,6 @@ int main(int argc, char **argv)
 
 	for (int i(0); i < 20; i++)
 		apples[i] = new Apples(n, m, scale);
-	s[0].x = 10;  s[0].y = 10; //snake start coordinat
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
@@ -126,11 +107,12 @@ int main(int argc, char **argv)
 	glLoadIdentity();
 	gluOrtho2D(0, fieldWidth, 0, fieldHeight);
 	glutDisplayFunc(display);     // Draw func
-	glutTimerFunc(speedSnake, timer, 0); //Timer
+	glutTimerFunc(snake->getSpeedSnake(), timer, 0); //Timer
 	glutSpecialFunc(myKeyboard);  //Key
 	glutMainLoop();
 
 	delete[] apples;
+	delete snake;
 
 	return 0;
 }
