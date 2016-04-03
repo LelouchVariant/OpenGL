@@ -17,12 +17,11 @@ int fieldHeight = scale*m;
 
 
 Apples *apples[20];
-Snakes *snake = new Snakes(scale);
+Snakes *snake = new Snakes(scale,n,m);
 
 
 void tick()
 {
-
 	snake->snakeRun();
 
 	for (int i(0); i < 20; i++) {
@@ -32,14 +31,7 @@ void tick()
 		}
 	}
 
-	
-
-	//if (s[0].x > n) snakeDirection = 1;
-	//if (s[0].x < n) snakeDirection = 2;
-
-	//if (s[0].y > m) snakeDirection = 3;
-	//if (s[0].y < m) snakeDirection = 0;
-
+	snake->checkGameOver();
 }
 
 void myKeyboard(int key, int a, int b) {

@@ -1,16 +1,20 @@
 #include "stdafx.h"
 #include "Snakes.h"
+#include <Windows.h>
 
 Snakes::Snakes()
 {
 }
 
-Snakes::Snakes(int SCALE)
+Snakes::Snakes(int SCALE,int N,int M)
 {
 	SnakeSpeed = 150;
 	snakePosition[0].x = 10;  snakePosition[0].y = 10; //snake start coordinat
-	snakeNum = 4;
+	snakeDirection = 1;
+	snakeNum = 1;
 	scale = SCALE;
+	n = N;
+	m = M;
 }
 
 Snakes::~Snakes()
@@ -53,9 +57,8 @@ void Snakes::snakeRun() {
 
 void Snakes::snakeEat() {
 	snakeNum++;
-	SnakeSpeed -= 2;
+	SnakeSpeed -= 3;
 }
-
 
 int Snakes::getSnakeHeadX() {
 	return snakePosition[0].x;
@@ -63,4 +66,18 @@ int Snakes::getSnakeHeadX() {
 
 int Snakes::getSnakeHeadY() {
 	return snakePosition[0].y;
+}
+
+void Snakes::checkGameOver() {
+	if (snakePosition[0].x > n || snakePosition[0].x < 0 || snakePosition[0].y > m || snakePosition[0].y < 0) {
+		MessageBox(NULL, L"Game over", L"Game over!!!", MB_OK);
+		exit(0);
+	}
+
+	
+		for (int i(1); i < snakeNum;i++)
+			if (snakePosition[0].x == snakePosition[i].x && snakePosition[0].y == snakePosition[i].y) {
+				MessageBox(NULL, L"Game over", L"Game over!!!", MB_OK);
+				exit(0);
+			}
 }
